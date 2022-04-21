@@ -10,8 +10,6 @@ def print_board():
     print(row)
   print()
 
-print_board()
-
 def check_mark(row,col):
   if board[row][col] == "-":
     return True
@@ -27,35 +25,94 @@ def place_mark(row,col,player_id):
     print("Invalid Player")
 
 def check_win(player_id):
-  win = True
   if player_id == 1:
-    for i in range(3):
-      for j in range(3):
-        if board[i][j] != "X" and board[j][i] != "X":
-          win = False
-    for i in range(3):
-      if board[i][i] != "X":
+    check = "X"
+  else:
+    check = "O"
+  
+  #rows
+  for i in range(3):
+    win = True
+    for j in range(3):
+      if board[i][j] != check:
         win = False
-    for i in range(3):
-      if board[i][2 - i] != "X":
+        break
+    if win:
+      return win
+
+  #columns
+  for i in range(3):
+    win = True
+    for j in range(3):
+      if board[j][i] != check:
         win = False
+        break
+    if win:
+      return win
+  
+  #diagonals
+  win = True
+  for i in range(3):
+    if board[i][i] != check:
+      win = False
+      break
+  if win:
+      return win
+  
+  win = True
+  for i in range(3):
+    if board[i][2 - i] != check:
+      win = False
+      break
+  if win:
+    return win
+  return False
+
+def check_tie():
+  for row in board:
+    for item in row:
+      if item == '-':
+        return False
+  return True
+
+def switch_player(player_id):
+  if player_id == 2:
+    print("Player 1's turn.")
+    return 1
+  else:
+    print("Player 2's turn.")
+    return 2
 
 def main():
-  print("Testing print_board")
+  player_id = 1
+  print("Player 1's turn.")
   print_board()
+  while True:
+    #Get input from player 1 to place a mark
+    row, col = map(int, input("Please choose a spot to place your mark. ").split(","))
 
-  print("Checking if 1,1 is -")
-  print(check_mark(1,1))
+    #Check input loop
+    if check_mark(row,col) == True:
+      place_mark(row,col,player_id)
+    else:
+      print("You can't place a mark here.")
+      row, col = map(int, input("Please choose a spot to place your mark. ").split(","))
 
-  print("If check_mark is true, then place the mark.")
-  if check_mark(1,1) == True:
-    place_mark(1,1,1)
-  print_board()
+    #Check for game end
+    if check_win(player_id) == True:
+      print("Player " + str(player_id) + " has won!")
+      print_board()
+      break
+    if check_tie() == True:
+      print("It's a tie!")
+      print_board()
+      break
+    
+    #Next player's turn
+    player_id = switch_player(player_id)
 
-  print("Check if player has won.")
-  if check_win(1) == True:
-    print("Player 1 has won!")
-  else:
-    print("")
+    #Show the board
+    print_board()
 
+#Start the game
 main()
